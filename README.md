@@ -65,7 +65,7 @@ You will probably use it for development, and definitely use it for submission.
 
 You should have received a `.rai_profile` file by email.
 Put that file in `~/.rai_profile` (Linux/macOS) or `%HOME%/.rai_profile` (Windows).
-Your `.rai_profile` should look something like this (indented with tabs!)
+Your `.rai_profile` should look something like this (indented with space!)
 
     profile:
         firstname: <your-given-name>
@@ -145,7 +145,7 @@ You should see something that looks like the following:
 ==15163== NVPROF is profiling process 15163, command: python m1.2.py
 Loading model...[13:14:46] src/operator/././cudnn_algoreg-inl.h:112: Running performance tests to find the best convolution algorithm,this can take a while... (setting env variable MXNET_CUDNN_AUTOTUNE_DEFAULT to 0 to disable)
  done
-EvalMetric: {'accuracy': 0.8177}
+EvalMetric: {'accuracy': 0.8171}
 ==15163== Profiling application: python m1.2.py
 ==15163== Profiling result:
             Type  Time(%)      Time     Calls       Avg       Min       Max  Name
@@ -222,12 +222,11 @@ When your implementation is correct, you should see output like this:
 
     Loading fashion-mnist data... done
     Loading model... done
-    Op Time: [ some time ]
-    Op Time: [ some time ]
-    Correctness: [ some accuracy ] Model: ece408
-    30.70user 1.36system 30.06elapsed
-
-(We have not trained the model yet.)
+    New Inference
+    Op Time: 21.48
+    Op Time: 101.93
+    Correctness: 0.8171 Model: ece408
+    
 
 Every time your layer is invoked, it will print the "Op Time," the time spent working on that layer.
 Since the network has two convolutional layers, two times will be printed.
@@ -241,13 +240,13 @@ The correctness does depend on the data size. Check your correctness on the full
 
 For example, you could modify `rai_build.yml` to run
 
-    python m2.1.py 100
+    python m2.1.py 10000
 
 | Model | Number of Images | Correctness  |
 |-------------| -----| -----  |
-| ece408 | 10000 (default) | 0.8451 |
-| ece408 | 100 | 0.88 |
-| ece408 | 10 | 1 |
+| ece408 | 10000 (default) | 0.8171 |
+
+(We can provide another model for correctness check. - probably during ML3. Final model where we will run will be different.)
 
 The provided `m2.1.py` is identical to the one used by `--submit=m2`.
 You may modify `m2.1.py` as you please, but check that `--submit=m2` will still invoke your code correctly.
@@ -527,8 +526,8 @@ The MXNet instructions are available [here](https://mxnet.incubator.apache.org/g
 
     # install  mxnet prereqs
     sudo apt install -y build-essential git libopenblas-dev liblapack-dev libopencv-dev python-pip python-dev python-setuptools python-numpy
-    # download MXNet release 0.11.0
-    git clone --single-branch --depth 1 --branch v0.11.0 --recursive https://github.com/apache/incubator-mxnet
+    # download MXNet release 1.3.0
+    git clone --single-branch --depth 1 --branch v1.3.0 --recursive https://github.com/apache/incubator-mxnet
     # build MXNet
     nice -n20 make -C incubator-mxnet -j`nproc` USE_CUDA=1 USE_CUDA_PATH=/usr/local/cuda USE_CUDNN=1 USE_BLAS=openblas
     # install python bindings
@@ -562,7 +561,7 @@ Download the trained models (for the existing MXNet implementation and your impl
         https://github.com/illinois-impact/ece408_mxnet_docker/raw/2018sp/models/ece408-002.params \
         https://github.com/illinois-impact/ece408_mxnet_docker/raw/2018sp/models/ece408-symbol.json
 
-Download the scripts we use for evaluation
+Download the scripts we use for evaluation (needs to be modified to use 74x74 input image size)
 
     wget \
         https://github.com/illinois-impact/ece408_mxnet_docker/raw/2018sp/scripts/m1.1.py \
