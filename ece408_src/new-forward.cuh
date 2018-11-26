@@ -13,12 +13,12 @@
 #define k4d(i3, i2, i1, i0)                                                    \
     k[(i3) * (C * K * K) + (i2) * (K * K) + (i1) * (K) + i0]
 
-__constant__ float k_shared[1250];
 
 #include <mxnet/base.h>
 
 namespace mxnet {
 namespace op {
+__constant__ float k_shared[1250];
 
 __global__ void forward_kernel(float *y, const float *x, const float *k,
                                const int B, const int M, const int C,
@@ -35,24 +35,12 @@ __global__ void forward_kernel(float *y, const float *x, const float *k,
 
     const int H_out = H - K + 1;
     const int W_out = W - K + 1;
-    const int tile_iw = ceil(W_out / (TILE_WIDTH * 1.0));
 
-    // An example use of these macros:
-    // float a = y4d(0,0,0,0)
-    // y4d(0,0,0,0) = a
-
-    double acc = 0.0;
-    // int n = blockIdx.x;
-    // int m = blockIdx.y;
-    // int h = (blockIdx.z / tile_iw) * blockDim.y + threadIdx.y;
-    // int w = (blockIdx.z % tile_iw) * blockDim.x + threadIdx.x;
     int b = blockIdx.x;
     int h = threadIdx.y;
     int w = threadIdx.x;
-    // int idx =  threadIdx.x;
-
-    // x_shared[m * TILE_WIDTH + idx] = x[n * BLOCK_WIDTH + m * TILE_WIDTH + idx];
-    x_shared[h * 28 + w] = x[b * 784 + h * 28 + w];
+    double acc = 0.0;
+    x_shared[h * H + w] = x[b * 784 + h * H + w];
 
     __syncthreads();
 
