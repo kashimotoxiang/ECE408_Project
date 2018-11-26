@@ -1,7 +1,7 @@
 
 #ifndef MXNET_OPERATOR_NEW_FORWARD_CUH_
 #define MXNET_OPERATOR_NEW_FORWARD_CUH_
-#define TILE_WIDTH 32
+#define TILE_WIDTH 28
 #define BLOCK_WIDTH 784
 
 #define y4d(i3, i2, i1, i0)                                                    \
@@ -42,13 +42,18 @@ __global__ void forward_kernel(float *y, const float *x, const float *k,
     // y4d(0,0,0,0) = a
 
     double acc = 0.0;
-    int n = blockIdx.x;
-    int m = blockIdx.y;
-    int h = (blockIdx.z / tile_iw) * blockDim.y + threadIdx.y;
-    int w = (blockIdx.z % tile_iw) * blockDim.x + threadIdx.x;
-    int idx =  threadIdx.x;
+    // int n = blockIdx.x;
+    // int m = blockIdx.y;
+    // int h = (blockIdx.z / tile_iw) * blockDim.y + threadIdx.y;
+    // int w = (blockIdx.z % tile_iw) * blockDim.x + threadIdx.x;
+    int b = blockIdx.x;
+    int h = threadIdx.y;
+    int w = threadIdx.x;
+    // int idx =  threadIdx.x;
 
-    x_shared[m * TILE_WIDTH + idx] = x[n * BLOCK_WIDTH + m * TILE_WIDTH + idx];
+    // x_shared[m * TILE_WIDTH + idx] = x[n * BLOCK_WIDTH + m * TILE_WIDTH + idx];
+    x_shared[h * 28 + w] = x[b * 784 + h * 28 + w];
+
     __syncthreads();
 
     if (h < H_out && w < W_out) {
@@ -61,62 +66,63 @@ __global__ void forward_kernel(float *y, const float *x, const float *k,
             //     }
             // }
 
-            acc += x_shared[(h +  0) * 28 + (idx + 0)] *
+            acc += x_shared[(h +  0) * 28 + (w + 0)] *
                    k_shared[c * 25 + 0];
-            acc += x_shared[(h +  0) * 28 + (idx + 1)] *
+            acc += x_shared[(h +  0) * 28 + (w + 1)] *
                    k_shared[c * 25 + 1];
-            acc += x_shared[(h +  0) * 28 + (idx + 2)] *
+            acc += x_shared[(h +  0) * 28 + (w + 2)] *
                    k_shared[c * 25 + 2];
-            acc += x_shared[(h +  0) * 28 + (idx + 3)] *
+            acc += x_shared[(h +  0) * 28 + (w + 3)] *
                    k_shared[c * 25 + 3];
-            acc += x_shared[(h +  0) * 28 + (idx + 4)] *
+            acc += x_shared[(h +  0) * 28 + (w + 4)] *
                    k_shared[c * 25 + 4];
 
-            acc += x_shared[(h +  1) * 28 + (idx + 0)] *
+            acc += x_shared[(h +  1) * 28 + (w + 0)] *
                    k_shared[c * 25 + 5];
-            acc += x_shared[(h +  1) * 28 + (idx + 1)] *
+            acc += x_shared[(h +  1) * 28 + (w + 1)] *
                    k_shared[c * 25 + 6];
-            acc += x_shared[(h +  1) * 28 + (idx + 2)] *
+            acc += x_shared[(h +  1) * 28 + (w + 2)] *
                    k_shared[c * 25 + 7];
-            acc += x_shared[(h +  1) * 28 + (idx + 3)] *
+            acc += x_shared[(h +  1) * 28 + (w + 3)] *
                    k_shared[c * 25 + 8];
-            acc += x_shared[(h +  1) * 28 + (idx + 4)] *
+            acc += x_shared[(h +  1) * 28 + (w + 4)] *
                    k_shared[c * 25 + 9];
 
-            acc += x_shared[(h +  2) * 28 + (idx + 0)] *
+            acc += x_shared[(h +  2) * 28 + (w + 0)] *
                    k_shared[c * 25 + 10];
-            acc += x_shared[(h +  2) * 28 + (idx + 1)] *
+            acc += x_shared[(h +  2) * 28 + (w + 1)] *
                    k_shared[c * 25 + 11];
-            acc += x_shared[(h +  2) * 28 + (idx + 2)] *
+            acc += x_shared[(h +  2) * 28 + (w + 2)] *
                    k_shared[c * 25 + 12];
-            acc += x_shared[(h +  2) * 28 + (idx + 3)] *
+            acc += x_shared[(h +  2) * 28 + (w + 3)] *
                    k_shared[c * 25 + 13];
-            acc += x_shared[(h +  2) * 28 + (idx + 4)] *
+            acc += x_shared[(h +  2) * 28 + (w + 4)] *
                    k_shared[c * 25 + 14];
 
-            acc += x_shared[(h +  3) * 28 + (idx + 0)] *
+            acc += x_shared[(h +  3) * 28 + (w + 0)] *
                    k_shared[c * 25 + 15];
-            acc += x_shared[(h +  3) * 28 + (idx + 1)] *
+            acc += x_shared[(h +  3) * 28 + (w + 1)] *
                    k_shared[c * 25 + 16];
-            acc += x_shared[(h +  3) * 28 + (idx + 2)] *
+            acc += x_shared[(h +  3) * 28 + (w + 2)] *
                    k_shared[c * 25 + 17];
-            acc += x_shared[(h +  3) * 28 + (idx + 3)] *
+            acc += x_shared[(h +  3) * 28 + (w + 3)] *
                    k_shared[c * 25 + 18];
-            acc += x_shared[(h +  3) * 28 + (idx + 4)] *
+            acc += x_shared[(h +  3) * 28 + (w + 4)] *
                    k_shared[c * 25 + 19];
 
-            acc += x_shared[(h +  4) * 28 + (idx + 0)] *
+            acc += x_shared[(h +  4) * 28 + (w + 0)] *
                    k_shared[c * 25 + 20];
-            acc += x_shared[(h +  4) * 28 + (idx + 1)] *
+            acc += x_shared[(h +  4) * 28 + (w + 1)] *
                    k_shared[c * 25 + 21];
-            acc += x_shared[(h +  4) * 28 + (idx + 2)] *
+            acc += x_shared[(h +  4) * 28 + (w + 2)] *
                    k_shared[c * 25 + 22];
-            acc += x_shared[(h +  4) * 28 + (idx + 3)] *
+            acc += x_shared[(h +  4) * 28 + (w + 3)] *
                    k_shared[c * 25 + 23];
-            acc += x_shared[(h +  4) * 28 + (idx + 4)] *
+            acc += x_shared[(h +  4) * 28 + (w + 4)] *
                    k_shared[c * 25 + 24];
+            y[b * 28800 + c * 576 + h * 24 + w] = acc;
 
-            y4d(n, m, h, w) += acc;
+            // y4d(n, m, h, w) += acc;
         }
     }
 }
@@ -153,7 +159,7 @@ void forward<gpu, float>(mshadow::Tensor<gpu, 4, float> &y,
 
     // Set the kernel dimensions
     dim3 blockDim(TILE_WIDTH, TILE_WIDTH, 1);
-    dim3 gridDim(B, M, Z);
+    dim3 gridDim(B, 1, 1);
 
     cudaMemcpyToSymbol(k_shared, w.dptr_, 1250 * sizeof(float), 0,
                        cudaMemcpyDeviceToDevice);
