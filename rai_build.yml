@@ -18,10 +18,11 @@ commands:
     # - /usr/bin/time python m1.1.py # execute code
     #- /usr/bin/time python m1.2.py # execute code
     # - /usr/bin/time python m2.1.py # execute code
-    - /usr/bin/time python m3.1.py
-    - nvprof -o timeline.nvprof python m3.1.py
-    - nvprof --kernels "::forward:1" --analysis-metrics -o forward1_analysis.nvprof python m3.1.py
-    - nvprof --kernels "::forward:2" --analysis-metrics -o forward2_analysis.nvprof python m3.1.py
+    # - /usr/bin/time python m3.1.py
+    - /usr/bin/time python m4.1.py
+    # - nvprof -o timeline.nvprof python m3.1.py
+    # - nvprof --kernels "::forward:1" --analysis-metrics -o forward1_analysis.nvprof python m3.1.py
+    # - nvprof --kernels "::forward:2" --analysis-metrics -o forward2_analysis.nvprof python m3.1.py
     # - /usr/bin/time python m3.1.py # execute code
     # - /usr/bin/time python m4.1.py # execute code
     # - nvprof -f -o timeline.nvvp python m1.2.py # execute code
