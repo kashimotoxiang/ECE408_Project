@@ -1,6 +1,6 @@
 #ifndef MXNET_OPERATOR_NEW_FORWARD_CUH_
 #define MXNET_OPERATOR_NEW_FORWARD_CUH_
-#define TILE_WIDTH 16
+#define TILE_WIDTH 32
 
 #define y4d(i3, i2, i1, i0)                                                    \
     y[(i3) * (M * H_out * W_out) + (i2) * (H_out * W_out) + (i1) * (W_out) + i0]
@@ -102,12 +102,6 @@ __global__ void forward_kernel(float *y, const float *x, const float *k,
             tmp += x4d(n, c, (h + 6), (w + 4)) * k4d(m, c, 6, 4);
             tmp += x4d(n, c, (h + 6), (w + 5)) * k4d(m, c, 6, 5);
             tmp += x4d(n, c, (h + 6), (w + 6)) * k4d(m, c, 6, 6);
-
-            //      for (int p = 0; p < K; p++) {
-            //          for (int q = 0; q < K; q++) {
-            //              tmp += x4d(n, c, h + p, w + q) * k4d(m, c, p, q);
-            //          }
-            //      }
         }
         y4d(n, m, h, w) = tmp;
         tmp = 0;

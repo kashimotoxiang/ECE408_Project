@@ -1,6 +1,7 @@
+
 #ifndef MXNET_OPERATOR_NEW_FORWARD_CUH_
 #define MXNET_OPERATOR_NEW_FORWARD_CUH_
-#define TILE_WIDTH 16
+#define TILE_WIDTH 32
 
 #define y4d(i3, i2, i1, i0)                                                    \
     y[(i3) * (M * H_out * W_out) + (i2) * (H_out * W_out) + (i1) * (W_out) + i0]
@@ -43,15 +44,74 @@ __global__ void forward_kernel(float *y, const float *x, const float *k,
     int h = (blockIdx.z / tile_iw) * blockDim.y + threadIdx.y;
     int w = (blockIdx.z % tile_iw) * blockDim.x + threadIdx.x;
 
+    float tmp = 0;
+
     if (h < H_out && w < W_out) {
         for (int c = 0; c < C; c++) {
-            for (int p = 0; p < K; p++) {
-                for (int q = 0; q < K; q++) {
-                    y4d(n, m, h, w) +=
-                        x4d(n, c, h + p, w + q) * k4d(m, c, p, q);
-                }
-            }
+            tmp += x4d(n, c, (h + 0), (w + 0)) * k4d(m, c, 0, 0);
+            tmp += x4d(n, c, (h + 1), (w + 0)) * k4d(m, c, 1, 0);
+            tmp += x4d(n, c, (h + 2), (w + 0)) * k4d(m, c, 2, 0);
+            tmp += x4d(n, c, (h + 3), (w + 0)) * k4d(m, c, 3, 0);
+            tmp += x4d(n, c, (h + 4), (w + 0)) * k4d(m, c, 4, 0);
+            tmp += x4d(n, c, (h + 5), (w + 0)) * k4d(m, c, 5, 0);
+            tmp += x4d(n, c, (h + 6), (w + 0)) * k4d(m, c, 6, 0);
+
+            tmp += x4d(n, c, (h + 0), (w + 1)) * k4d(m, c, 0, 1);
+            tmp += x4d(n, c, (h + 1), (w + 1)) * k4d(m, c, 1, 1);
+            tmp += x4d(n, c, (h + 2), (w + 1)) * k4d(m, c, 2, 1);
+            tmp += x4d(n, c, (h + 3), (w + 1)) * k4d(m, c, 3, 1);
+            tmp += x4d(n, c, (h + 4), (w + 1)) * k4d(m, c, 4, 1);
+            tmp += x4d(n, c, (h + 5), (w + 1)) * k4d(m, c, 5, 1);
+            tmp += x4d(n, c, (h + 6), (w + 1)) * k4d(m, c, 6, 1);
+
+            tmp += x4d(n, c, (h + 0), (w + 2)) * k4d(m, c, 0, 2);
+            tmp += x4d(n, c, (h + 1), (w + 2)) * k4d(m, c, 1, 2);
+            tmp += x4d(n, c, (h + 2), (w + 2)) * k4d(m, c, 2, 2);
+            tmp += x4d(n, c, (h + 3), (w + 2)) * k4d(m, c, 3, 2);
+            tmp += x4d(n, c, (h + 4), (w + 2)) * k4d(m, c, 4, 2);
+            tmp += x4d(n, c, (h + 5), (w + 2)) * k4d(m, c, 5, 2);
+            tmp += x4d(n, c, (h + 6), (w + 2)) * k4d(m, c, 6, 2);
+
+            tmp += x4d(n, c, (h + 0), (w + 3)) * k4d(m, c, 0, 3);
+            tmp += x4d(n, c, (h + 1), (w + 3)) * k4d(m, c, 1, 3);
+            tmp += x4d(n, c, (h + 2), (w + 3)) * k4d(m, c, 2, 3);
+            tmp += x4d(n, c, (h + 3), (w + 3)) * k4d(m, c, 3, 3);
+            tmp += x4d(n, c, (h + 4), (w + 3)) * k4d(m, c, 4, 3);
+            tmp += x4d(n, c, (h + 5), (w + 3)) * k4d(m, c, 5, 3);
+            tmp += x4d(n, c, (h + 6), (w + 3)) * k4d(m, c, 6, 3);
+
+            tmp += x4d(n, c, (h + 0), (w + 4)) * k4d(m, c, 0, 4);
+            tmp += x4d(n, c, (h + 1), (w + 4)) * k4d(m, c, 1, 4);
+            tmp += x4d(n, c, (h + 2), (w + 4)) * k4d(m, c, 2, 4);
+            tmp += x4d(n, c, (h + 3), (w + 4)) * k4d(m, c, 3, 4);
+            tmp += x4d(n, c, (h + 4), (w + 4)) * k4d(m, c, 4, 4);
+            tmp += x4d(n, c, (h + 5), (w + 4)) * k4d(m, c, 5, 4);
+            tmp += x4d(n, c, (h + 6), (w + 4)) * k4d(m, c, 6, 4);
+
+            tmp += x4d(n, c, (h + 0), (w + 5)) * k4d(m, c, 0, 5);
+            tmp += x4d(n, c, (h + 1), (w + 5)) * k4d(m, c, 1, 5);
+            tmp += x4d(n, c, (h + 2), (w + 5)) * k4d(m, c, 2, 5);
+            tmp += x4d(n, c, (h + 3), (w + 5)) * k4d(m, c, 3, 5);
+            tmp += x4d(n, c, (h + 4), (w + 5)) * k4d(m, c, 4, 5);
+            tmp += x4d(n, c, (h + 5), (w + 5)) * k4d(m, c, 5, 5);
+            tmp += x4d(n, c, (h + 6), (w + 5)) * k4d(m, c, 6, 5);
+
+            tmp += x4d(n, c, (h + 0), (w + 6)) * k4d(m, c, 0, 6);
+            tmp += x4d(n, c, (h + 1), (w + 6)) * k4d(m, c, 1, 6);
+            tmp += x4d(n, c, (h + 2), (w + 6)) * k4d(m, c, 2, 6);
+            tmp += x4d(n, c, (h + 3), (w + 6)) * k4d(m, c, 3, 6);
+            tmp += x4d(n, c, (h + 4), (w + 6)) * k4d(m, c, 4, 6);
+            tmp += x4d(n, c, (h + 5), (w + 6)) * k4d(m, c, 5, 6);
+            tmp += x4d(n, c, (h + 6), (w + 6)) * k4d(m, c, 6, 6);
+
+            //      for (int p = 0; p < K; p++) {
+            //          for (int q = 0; q < K; q++) {
+            //              tmp += x4d(n, c, h + p, w + q) * k4d(m, c, p, q);
+            //          }
+            //      }
         }
+        y4d(n, m, h, w) = tmp;
+        tmp = 0;
     }
 }
 
